@@ -22,14 +22,14 @@ int main()
 
     sf::TcpSocket socket;
     sf::TcpListener listener;
-    listener.listen( 55001 );
-    std::cout << "Listening..." << std::endl;
-
-    sf::SocketSelector selector;
-    selector.add( listener );
-
-    // if ( listener == sf::Socket::Done )
+    
+    if ( listener.listen( 55001 ) == sf::Socket::Done )
     {
+        std::cout << "Listening..." << std::endl;
+
+        sf::SocketSelector selector;
+        selector.add( listener );
+
         if ( selector.wait( sf::seconds( 10 ) ) )
         {   
             for ( unsigned int i = 0; i < game.players.size(); i++ )
@@ -57,11 +57,12 @@ int main()
             game.makeStack();
             game.dealOut( 5 );
             game.printInfo();
+            game.sendCardInfo();
             
-            do
-            {   
+            while ( !game.makeTurn() ) {
+                ++game;
                 game.sendCardInfo();
-            } while ( !game.makeTurn() );
+            };            
 
             //==========================================
         }

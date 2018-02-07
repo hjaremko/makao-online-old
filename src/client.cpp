@@ -31,9 +31,9 @@ int main()
 
         Card topCard;
         HandDeck hand;
-        bool isYourTurn = false;
-        bool isFight = false;
         int toTake = 0;
+        bool isYourTurn = false;
+        std::string gameStatus = "-";
         std::string request = "-";
 
         socket.receive( cardInfo );
@@ -42,7 +42,7 @@ int main()
 
         cardInfo >> topCard;
         turnInfo >> isYourTurn;
-        status >> isFight >> toTake >> request;
+        status >> gameStatus >> toTake >> request;
 
         std::cout << "\033[2J\033[1;1H";
 
@@ -56,6 +56,12 @@ int main()
         }
 
         hand.show();
+
+        for ( int i = 0; i < hand.size(); ++i )
+        {
+            std::cout << "[" << i << "] ";
+        }
+        std::cout << std::endl;
 
         while ( isYourTurn )
         {
@@ -85,6 +91,7 @@ int main()
                 isYourTurn = false;
         }
     }
+    
     std::cout << "Error connecting to the server" << std::endl;
 
 

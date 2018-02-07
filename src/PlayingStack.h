@@ -8,7 +8,7 @@ class PlayingStack : public Deck
 {
     public:
         Card getTop();
-        bool pushBack( Card, bool, std::string );
+        bool pushBack( Card, std::string, std::string );
         void pushForce( Card );
 
         void operator>>( Deck& deck )
@@ -23,7 +23,6 @@ class PlayingStack : public Deck
         }
 
         bool isInPower = false;
-    private:
 };
 
 #endif // PLAYINGSTACK_H

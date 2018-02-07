@@ -13,9 +13,9 @@ Card::Card( std::string type, std::string color ) : type_( type ), color_( color
     {
         case 'A':
         case 'K':
-        // case 'Q':
+        case 'Q':
         case 'J':
-        // case '4':
+        case '4':
         case '3':
         case '2':
             isSpecial_ = true;

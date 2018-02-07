@@ -1,8 +1,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <SFML/Network.hpp>
 #include <iostream>
+
+#include <SFML/Network.hpp>
 
 #include "Deck.h"
 #include "PlayingStack.h"
@@ -14,16 +15,27 @@ class Game
         Game();
         virtual ~Game();
 
+        bool makeTurn();
         void dealOut( int );
         void makeStack();
         void sendCardInfo();
-        bool makeTurn();
         void printInfo();
         void refillDrawingDeck();
-        void executeSpecial( Card );
+        void executeSpecial( Card& );
 
         std::array<Player, 2> players;
         PlayingStack stack;
+
+        Game& operator++()
+        {
+            std::cout << "Next turn" << std::endl;
+
+            turn++;
+            if ( turn == players.size() )
+                turn = 0;
+
+            return *this;
+        }
 
     private:
         unsigned int turn = 0;
@@ -33,11 +45,10 @@ class Game
         sf::Packet cardPacket;
         sf::Packet turnPacket;
 
-        bool isFight = false;
-        bool isRequest = false;
         int toTake = 0;
-        int whoRequested_ = 0;
+        int whoRequested_ = -1;
         std::string request = "-";
+        std::string gameStatus = "-";
 };
 
 #endif // GAME_H

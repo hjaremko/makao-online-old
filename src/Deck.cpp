@@ -2,6 +2,7 @@
 #include <array>
 #include <random>
 #include <algorithm>
+
 #include "Deck.h"
 
 Deck::Deck()

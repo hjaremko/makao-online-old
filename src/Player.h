@@ -16,7 +16,7 @@ class Player
         virtual ~Player();
 
         void getFromDeck( Deck&, int );
-        bool pushToStack( PlayingStack&, int, Card&, bool, std::string );
+        bool pushToStack( PlayingStack&, int, Card&, std::string, std::string );
         bool hasMakao();
         bool getRequest( std::string, std::string& );
 
@@ -25,6 +25,7 @@ class Player
         sf::TcpSocket* socket;
 
         friend Game;
+
     protected:
         HandDeck handDeck;
         bool hasMakao_;

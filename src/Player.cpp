@@ -17,9 +17,9 @@ void Player::getFromDeck( Deck& deck, int amount )
         this->handDeck.pushBack( deck.popBack() );
 }
 
-bool Player::pushToStack( PlayingStack& stack, int which, Card& last, bool isFight, std::string request )
+bool Player::pushToStack( PlayingStack& stack, int which, Card& last, std::string status, std::string request )
 {
-    if ( stack.pushBack( handDeck.get( which ), isFight, request ) )
+    if ( stack.pushBack( handDeck.get( which ), status, request ) )
     {
         last = stack.getTop();
         handDeck.cards_.erase( handDeck.cards_.begin() + which );

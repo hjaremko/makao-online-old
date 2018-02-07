@@ -13,9 +13,6 @@ class HandDeck : public Deck
         Card get( int );
 
         friend Player;
-
-    private:
-
 };
 
 #endif // HANDDECK_H
