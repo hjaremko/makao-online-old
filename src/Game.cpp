@@ -112,7 +112,7 @@ bool Game::makeTurn()
                     result = players[ turn ].getRequest( choiceMsg, newColor );
                     stack.getTop().setColor( newColor );
                     lastThrown.clear();
-                    gameStatus == "ace";
+                    gameStatus = "-";
                 }
                 else
                 {

@@ -30,7 +30,7 @@ int main()
         sf::SocketSelector selector;
         selector.add( listener );
 
-        if ( selector.wait( sf::seconds( 10 ) ) )
+        if ( selector.wait( sf::seconds( 60 ) ) )
         {   
             for ( unsigned int i = 0; i < game.players.size(); i++ )
             {
