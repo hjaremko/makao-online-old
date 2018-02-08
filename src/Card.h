@@ -6,6 +6,8 @@
 
 #include <SFML/Network.hpp>
 
+class TextureCard;
+
 class Card
 {
     public:
@@ -14,6 +16,8 @@ class Card
         virtual ~Card();
 
         friend sf::Packet& operator>>( sf::Packet&, Card& );
+        friend sf::Packet& operator>>( sf::Packet&, TextureCard& );
+        friend TextureCard;
 
         std::string getType() const;
         std::string getColor() const;
@@ -25,7 +29,7 @@ class Card
         bool operator==( const Card& card )
         {   
             return ( type_ == card.getType() ) || ( color_ == card.getColor() );
-        }
+}
 
     private:
         std::string type_;
