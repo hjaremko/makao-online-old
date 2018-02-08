@@ -49,8 +49,10 @@ bool getString( sf::Event& event, std::string& str, sf::Text& input )
 int main()
 {   
     sf::TcpSocket socket;
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
 
-    sf::RenderWindow window( sf::VideoMode( width, height ), "Makao Online" );
+    sf::RenderWindow window( sf::VideoMode( width, height ), "Makao Online", sf::Style::Default, settings );
     sf::Color green( 40, 75, 35 );
 
     std::string serverIp;
@@ -104,7 +106,6 @@ int main()
                         TextureCard topCard;
                         THandDeck hand;
 
-                        // int amountCards = 0;
                         int toTake = 0;
                         bool isYourTurn = false;
                         std::string gameStatus = "-";
@@ -132,7 +133,6 @@ int main()
                             TextureCard temp;
                             cardInfo >> temp;
                             hand.pushBack( temp );
-                            // amountCards++;
                         }
 
                         hand.show( window );
@@ -142,7 +142,7 @@ int main()
                         {
                             sf::Event turn;
 
-                            if ( window.pollEvent( turn ) )
+                            if ( window.waitEvent( turn ) )
                             {
                                 if ( turn.type == sf::Event::MouseButtonPressed )
                                 {
@@ -155,9 +155,8 @@ int main()
                                             if( hand.containsMouse( i, turn ) )
                                             {
                                                 if ( toTake > 0 ) 
-                                                {
                                                     std::cout << "To take: " << toTake << std::endl;
-                                                }
+
                                                 if ( request != "-" )
                                                     std::cout << "Request: " << request << std::endl;
 
@@ -180,7 +179,26 @@ int main()
                                                 break;
                                             }
                                         }
+                                    }
+                                    else if ( turn.mouseButton.button == sf::Mouse::Right )
+                                    {
+                                        std::string which = "-";
+                                        bool isSuccess = false;
+                                        sf::Packet choice;
+                                        sf::Packet result;
 
+                                        which = "r";
+                                        choice << which;
+
+                                        socket.send( choice );
+                                        socket.receive( result );
+
+                                        result >> isSuccess;
+
+                                        if( isSuccess )
+                                            isYourTurn = false;
+
+                                        break;
                                     }
                                 }
 
