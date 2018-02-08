@@ -57,3 +57,8 @@ void Card::clear()
     color_ = "-";
     isSpecial_ = false;
 }
+
+void Card::setColor( std::string newColor )
+{
+    color_ = newColor;
+}

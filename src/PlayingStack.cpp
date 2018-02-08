@@ -2,12 +2,12 @@
 
 #include "PlayingStack.h"
 
-Card PlayingStack::getTop()
+Card& PlayingStack::getTop()
 {   
     return cards_.back();
 }
 
-bool PlayingStack::pushBack( Card card, std::string status, std::string request )
+bool PlayingStack::pushBack( Card card, std::string status, std::string request, std::string color )
 {   
     if ( status == "fight" )
     {
@@ -31,7 +31,6 @@ bool PlayingStack::pushBack( Card card, std::string status, std::string request 
     }
     else if ( status == "jack" )
     {   
-        std::cout << card.getType() << " -- " << request << std::endl;
         if ( card.getType() == request || card.getType() == "J" )
         {
             cards_.push_back( card );

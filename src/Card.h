@@ -20,6 +20,7 @@ class Card
         std::string get() const;
         bool isSpecial() const;
         void clear();
+        void setColor( std::string );
 
         bool operator==( const Card& card )
         {   

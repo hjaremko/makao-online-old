@@ -49,6 +49,7 @@ class Game
         int whoRequested_ = -1;
         std::string request = "-";
         std::string gameStatus = "-";
+        std::string newColor = "-";
 };
 
 #endif // GAME_H

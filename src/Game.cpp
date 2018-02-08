@@ -52,7 +52,6 @@ void Game::sendCardInfo()
         for ( int j = 0; j < players[ i ].handDeck.size(); ++j )
             cardPacket << players[ i ].handDeck.get( j );
 
-        // std::cout << players[ i ].skip_ << std::endl;
         ( i == turn && players[ i ].skip_ <= 1 ) ? turnPacket << true : turnPacket << false;
 
         if ( players[ i ].skip_ > 0 )
@@ -105,12 +104,20 @@ bool Game::makeTurn()
 
                     result = players[ turn ].getRequest( choiceMsg, request );
                     lastThrown.clear();
-                    gameStatus = "jack";
+                }
+                else if ( gameStatus == "ace" )
+                {   
+                    std::cout << "Waiting for new color" << std::endl;
+
+                    result = players[ turn ].getRequest( choiceMsg, newColor );
+                    stack.getTop().setColor( newColor );
+                    lastThrown.clear();
+                    gameStatus == "ace";
                 }
                 else
                 {
                     choosenCard = std::stoi( choiceMsg );
-                    result = players[ turn ].pushToStack( stack, choosenCard, lastThrown, gameStatus, request );
+                    result = players[ turn ].pushToStack( stack, choosenCard, lastThrown, gameStatus, request, newColor );
 
                     if ( result && turn == whoRequested_ && gameStatus == "jack" ) 
                     {
@@ -172,6 +179,8 @@ void Game::printInfo()
     std::cout << "Cards in drawing deck: " << drawingDeck.size() << std::endl;
     std::cout << "Cards in stack: " << stack.size() << std::endl;
     std::cout << "Game status: " << gameStatus << std::endl;
+    std::cout << "Jack: " << request << std::endl;
+    std::cout << "Ace: " << newColor << std::endl;
 
     for ( Player& i : players )
     {
@@ -201,7 +210,14 @@ void Game::executeSpecial( Card& last )
         switch ( type[ 0 ] )
         {
             case 'A':
+            {
+                gameStatus = "ace";
+
+                sendCardInfo();
+                makeTurn();
+
                 break;
+            }
             case 'K':
                 break;
             case 'J':
