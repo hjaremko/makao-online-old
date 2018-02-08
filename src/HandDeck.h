@@ -4,15 +4,18 @@
 #include "Card.h"
 #include "Deck.h"
 
+#include <SFML/Graphics.hpp>
+
 class Player;
 
 class HandDeck : public Deck
 {
     public:
+        friend Player;
+
         void show();
         Card get( int );
 
-        friend Player;
 };
 
 #endif // HANDDECK_H
