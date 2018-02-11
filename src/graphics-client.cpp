@@ -152,7 +152,7 @@ int main()
 
                                         for ( int i = hand.size(); i >= 0; --i )
                                         {
-                                            if( hand.containsMouse( i, turn ) )
+                                            if ( hand.containsMouse( i, turn ) )
                                             {
                                                 if ( toTake > 0 ) 
                                                     std::cout << "To take: " << toTake << std::endl;

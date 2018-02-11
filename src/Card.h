@@ -29,7 +29,7 @@ class Card
         bool operator==( const Card& card )
         {   
             return ( type_ == card.getType() ) || ( color_ == card.getColor() );
-}
+        }
 
     private:
         std::string type_;
