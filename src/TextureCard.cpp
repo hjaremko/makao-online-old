@@ -28,13 +28,18 @@ TextureCard::TextureCard( std::string type, std::string color )
             isSpecial_ = false;
     }
 
-    std::string textureSource = "img/" + this->get() + ".png";
+    std::string textureSource;
+
+    if ( type != "-" && color != "-" )
+        textureSource = "img/" + this->get() + ".png";
+    else
+        textureSource = "img/back.png";
+
     this->texture.loadFromFile( textureSource.c_str() );
     texture.setSmooth( true );
     sprite.setTexture( texture );
     sprite.scale( sf::Vector2f( 0.2f, 0.2f ) );
-    //ctor
-}
+} //ctor
 
 void TextureCard::draw( sf::RenderWindow& window )
 {
@@ -43,7 +48,13 @@ void TextureCard::draw( sf::RenderWindow& window )
 
 void TextureCard::assignTexture()
 {
-    std::string textureSource = "img/" + get() + ".png";
+    std::string textureSource;
+
+    if ( type_ != "-" && color_ != "-" )
+        textureSource = "img/" + this->get() + ".png";
+    else
+        textureSource = "img/back.png";
+
     texture.loadFromFile( textureSource.c_str() );
     texture.setSmooth( true );
     sprite.setTexture( texture );

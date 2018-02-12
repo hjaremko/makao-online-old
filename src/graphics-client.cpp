@@ -104,9 +104,10 @@ int main()
                         sf::Packet status;
 
                         TextureCard topCard;
-                        THandDeck hand;
+                        THandDeck hand( 0 );
 
                         int toTake = 0;
+                        int amountPlayers = 0;
                         bool isYourTurn = false;
                         std::string gameStatus = "-";
                         std::string request = "-";
@@ -117,7 +118,24 @@ int main()
 
                         cardInfo >> topCard;
                         turnInfo >> isYourTurn;
-                        status >> gameStatus >> toTake >> request;
+                        status >> gameStatus >> toTake >> request >> amountPlayers;
+
+                        THandDeck otherPlayers[ amountPlayers - 1 ];
+
+                        for ( int k = 0; k < amountPlayers - 1; k++ )
+                        {
+                            int tmpSize = 0;
+                            status >> tmpSize;
+
+                            for ( int l = 0; l < tmpSize; l++ )
+                            {
+                                TextureCard temp;
+                                otherPlayers[ k ].orientation_ = k + 1;
+                                otherPlayers[ k ].pushBack( temp );
+                            }
+
+                            otherPlayers[ k ].show( window );
+                        }
 
                         topCard.assignTexture();
 

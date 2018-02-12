@@ -32,8 +32,8 @@ class Card
         }
 
     private:
-        std::string type_;
-        std::string color_;
+        std::string type_ = "-";
+        std::string color_ = "-";
         bool isSpecial_;
 };
 

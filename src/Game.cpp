@@ -57,7 +57,13 @@ void Game::sendCardInfo()
         if ( players[ i ].skip_ > 0 )
             players[ i ].skip_--;
         
-        specialStatus << gameStatus << toTake << request;
+        specialStatus << gameStatus << toTake << request << static_cast<int>( players.size() );
+
+        for ( int j = 0; j < players.size(); j++ )
+        {
+            if ( j != i )
+                specialStatus << players[ j ].handDeck.size();
+        }
 
         if ( players[ i ].socket->send( cardPacket ) != sf::Socket::Done )
             std::cout << "Error sending card info!" << std::endl;
