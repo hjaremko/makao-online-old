@@ -29,3 +29,8 @@ void THandDeck::show( sf::RenderWindow& window )
         i++;
     }
 }
+
+bool THandDeck::containsMouse( int i, sf::Event& turn )
+{
+    return cards_[ i ].sprite.getGlobalBounds().contains( turn.mouseButton.x, turn.mouseButton.y );
+}

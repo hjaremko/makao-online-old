@@ -6,8 +6,6 @@
 
 #include <SFML/Graphics.hpp>
 
-class Player;
-
 class THandDeck : public TextureDeck
 {
     public:
@@ -15,11 +13,7 @@ class THandDeck : public TextureDeck
         THandDeck( int );
 
         void show( sf::RenderWindow& );
-
-        bool containsMouse( int i, sf::Event& turn )
-        {
-            return cards_[ i ].sprite.getGlobalBounds().contains( turn.mouseButton.x, turn.mouseButton.y );
-        }
+        bool containsMouse( int, sf::Event& );
 
         int orientation_ = 0;
     private:

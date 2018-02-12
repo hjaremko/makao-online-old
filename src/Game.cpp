@@ -15,13 +15,12 @@ Game::Game()
     std::cout << "Initializing deck..." << std::endl;
 
     drawingDeck.fill();
-    //ctor
-}
+} //ctor
 
 Game::~Game()
 {
-    //dtor
-}
+    
+} //dtor
 
 void Game::dealOut( int amount )
 {

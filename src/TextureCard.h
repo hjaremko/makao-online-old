@@ -15,6 +15,7 @@ class TextureCard : public Card
         friend sf::Packet& operator>>( sf::Packet&, TextureCard& );
 
         TextureCard();
+        TextureCard( std::string );
         TextureCard( std::string, std::string );
         void draw( sf::RenderWindow& );
         void assignTexture();
