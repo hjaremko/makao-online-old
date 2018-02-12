@@ -7,6 +7,7 @@
 #include "TextureCard.h"
 #include "THandDeck.h"
 #include "ChoiceMenu.h"
+#include "Text.h"
 
 const int width = 720;
 const int height = 520;
@@ -21,28 +22,29 @@ sf::Packet& operator>>( sf::Packet& packet, TextureCard& card )
     return packet >> card.type_ >> card.color_;
 }
 
-bool getString( sf::Event& event, std::string& str, sf::Text& input )
+bool getString( sf::Event& event, Text& str )
 {
     if ( event.type == sf::Event::TextEntered )
     {
         if ( event.text.unicode == 8 ) //backspace
         {
-            std::cout << "Backspace!" << std::endl;
-            str.pop_back();
+            if ( str.get().getSize() > 0 )
+            {
+                sf::String tmp = str.get();
+                tmp.erase( str.get().getSize() - 1 );
+                str.set( tmp );
+            }
+        }
+        else if ( event.text.unicode == 13 ) //enter
+        {
+            return true;
         }
         else if ( event.text.unicode < 128 )
         {
-            str += static_cast<char>( event.text.unicode );
-            std::cout << "ASCII character typed: " << static_cast<int>( event.text.unicode ) << std::endl;
+            std::string tmp = str.get();
+            tmp += static_cast<char>( event.text.unicode );
+            str.set( tmp );
         }
-
-        if ( event.text.unicode == 13 ) //enter
-        {
-            std::cout << "Enter!" << std::endl;
-            return true;
-        }
-
-        input.setString( str );
     }
 
     return false;
@@ -57,20 +59,13 @@ int main()
     sf::RenderWindow window( sf::VideoMode( width, height ), "Makao Online", sf::Style::Default, settings );
     sf::Color green( 40, 75, 35 );
 
-    std::string serverIp;
-    sf::Text ipInputInfo;
-    sf::Font font;
-    font.loadFromFile( "img/OperatorMono-Bold.otf" );
-
     bool isDone = false;
-    sf::Text input;
-    input.setFont( font );
-    input.setFillColor( sf::Color::Red );
 
-
-    ipInputInfo.setFont( font );
-    ipInputInfo.setString( "Enter server ip address" );
-    ipInputInfo.setFillColor( sf::Color::Red );
+    Text ipInputInfo( "ENTER SERVER IP", 200 );
+    Text serverIp( "", 160 );
+    Text turnString( "YOUR TURN", 200 );
+    Text takeString( "TO TAKE", 160 );
+    Text requestString( "REQUEST", 160 );
 
     while ( window.isOpen() )
     {
@@ -81,17 +76,19 @@ int main()
                 window.close();
 
             if ( !isDone )
-                isDone = getString( event, serverIp, input );
+            {
+                isDone = getString( event, serverIp );
+            }
             else
             {
-                std::cout << serverIp << std::endl;
-                sf::Socket::Status status = socket.connect( serverIp, 55001 );
+                sf::Socket::Status status = socket.connect( serverIp.get().toAnsiString(), 55001 );
 
                 if ( status != sf::Socket::Done )
                 {
-                    // std::cout << "Connected" << std::endl;
                     isDone = false;
-                    serverIp.clear();
+                    serverIp.set( "" );
+                    window.clear( green );
+                    continue;
                 }
 
                 ChoiceMenu jackMenu( "jack" );
@@ -100,8 +97,6 @@ int main()
                 while( status != sf::Socket::Disconnected )
                 {
                     window.clear( green );
-
-                    std::cout << "Wait for your turn..." << std::endl;
 
                     sf::Packet cardInfo;
                     sf::Packet turnInfo;
@@ -124,6 +119,9 @@ int main()
                     turnInfo >> isYourTurn;
                     statusInfo >> gameStatus >> toTake >> request >> amountPlayers;
 
+                    takeString.set( std::to_string( toTake ) );
+                    requestString.set( request );
+
                     THandDeck otherPlayers[ amountPlayers - 1 ];
 
                     for ( int k = 0; k < amountPlayers - 1; ++k )
@@ -141,8 +139,6 @@ int main()
                         otherPlayers[ k ].show( window );
                     }
 
-                    std::cout << "\033[2J\033[1;1H";
-
                     while ( !cardInfo.endOfPacket() )
                     {
                         TextureCard temp;
@@ -156,15 +152,18 @@ int main()
                     hand.show( window );
 
                     if ( toTake > 0 ) 
-                        std::cout << "To take: " << toTake << std::endl;
+                        takeString.draw( window );
 
                     if ( request != "-" )
-                        std::cout << "Request: " << request << std::endl;
+                        requestString.draw( window );
 
                     if ( gameStatus == "jack" && request == "-" && isYourTurn )
                         jackMenu.show( window );
                     else if ( gameStatus == "ace" && isYourTurn )
                         aceMenu.show( window );
+
+                    if ( isYourTurn )
+                        turnString.draw( window );
 
                     window.display();
 
@@ -173,11 +172,8 @@ int main()
                         sf::Event turn;
                         std::string which = "-";
 
-
                         if ( window.waitEvent( turn ) && turn.type == sf::Event::MouseButtonPressed )
                         {
-                            std::cout << "Your turn!" << std::endl;
-
                             if ( turn.mouseButton.button == sf::Mouse::Left )
                             {
                                 bool isSuccess = false;
@@ -259,14 +255,15 @@ int main()
                                     isYourTurn = false;
                             }
                         }
-                        
+
                         while ( window.pollEvent( turn ) );
                     }
                 }
             }
 
             window.clear( green );
-            window.draw( input );
+            ipInputInfo.draw( window );
+            serverIp.draw( window );
             window.display();
         }
     } 
