@@ -91,6 +91,12 @@ int main()
                     continue;
                 }
 
+                int toTake = 0;
+                int amountPlayers = 0;
+                bool isYourTurn = false;
+                std::string gameStatus = "-";
+                std::string request = "-";
+
                 ChoiceMenu jackMenu( "jack" );
                 ChoiceMenu aceMenu( "ace" );
 
@@ -104,12 +110,6 @@ int main()
 
                     TextureCard topCard;
                     THandDeck hand( 0 );
-
-                    int toTake = 0;
-                    int amountPlayers = 0;
-                    bool isYourTurn = false;
-                    std::string gameStatus = "-";
-                    std::string request = "-";
 
                     status = socket.receive( cardInfo );
                     status = socket.receive( turnInfo );
@@ -195,8 +195,6 @@ int main()
                                         }
                                     }
 
-                                    std::cout << which << std::endl;
-
                                     if ( which == "-" )
                                         continue;
                                 }
@@ -226,6 +224,7 @@ int main()
                                     }
                                 }
 
+                                // std::cout << which << std::endl;
                                 choice << which;
 
                                 status = socket.send( choice );

@@ -22,8 +22,12 @@ void THandDeck::show( sf::RenderWindow& window )
 
         if ( orientation_ == 0 )
             card.sprite.move( sf::Vector2f( j + ( i * 30 ), 350 ) );
-        else
+        else if ( orientation_ == 1 )
             card.sprite.move( sf::Vector2f( 50, k + ( i * 30 ) ) );
+        else if ( orientation_ == 2 )
+            card.sprite.move( sf::Vector2f( j + ( i * 30 ), 10 ) );
+        else if ( orientation_ == 3 )
+            card.sprite.move( sf::Vector2f( 570, k + ( i * 30 ) ) );
 
         card.draw( window );
         i++;

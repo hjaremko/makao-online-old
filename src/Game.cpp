@@ -238,9 +238,9 @@ void Game::executeSpecial( Card& last )
             case '4':
             {
                 unsigned int nextPlayer = turn + 1;
+
                 if ( nextPlayer == players.size() )
                     nextPlayer = 0;
-
 
                 players[ nextPlayer ].skip_++;
                 gameStatus = "skip";

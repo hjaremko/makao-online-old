@@ -23,7 +23,7 @@ class Game
         void refillDrawingDeck();
         void executeSpecial( Card& );
 
-        std::array<Player, 2> players;
+        std::array<Player, 4> players;
         PlayingStack stack;
 
         Game& operator++()
