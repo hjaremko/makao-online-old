@@ -58,7 +58,7 @@ void Game::sendCardInfo()
         
         specialStatus << gameStatus << toTake << request << static_cast<int>( players.size() );
 
-        for ( int j = 0; j < players.size(); j++ )
+        for ( unsigned int j = 0; j < players.size(); j++ )
         {
             if ( j != i )
                 specialStatus << players[ j ].handDeck.size();
@@ -83,10 +83,12 @@ bool Game::makeTurn()
 {
     bool result = false;
     bool isEnd = false;
+    bool nextTurn = false;
     int choosenCard = 0;
     std::string choiceMsg;
     sf::Packet choice;
     sf::Packet isSuccess;
+    // Card localLast;
 
     if ( drawingDeck.size() < 26 )
         refillDrawingDeck();
@@ -104,15 +106,16 @@ bool Game::makeTurn()
             if ( choiceMsg != "r" )
             {
                 if ( gameStatus == "jack" && request == "-" )
-                {   
+                {
                     std::cout << "Setting request" << std::endl;
 
                     result = players[ turn ].getRequest( choiceMsg, request );
+                    nextTurn = true;
                     lastThrown.clear();
                 }
                 else if ( gameStatus == "ace" )
                 {   
-                    std::cout << "Waiting for new color" << std::endl;
+                    std::cout << "Setting new color" << std::endl;
 
                     result = players[ turn ].getRequest( choiceMsg, newColor );
                     stack.getTop().setColor( newColor );
@@ -122,9 +125,12 @@ bool Game::makeTurn()
                 else
                 {
                     choosenCard = std::stoi( choiceMsg );
-                    result = players[ turn ].pushToStack( stack, choosenCard, lastThrown, gameStatus, request, newColor );
+                    result = players[ turn ].pushToStack( stack, choosenCard, lastThrown, lastThrownBy, turn, gameStatus, request, newColor );
 
-                    if ( result && turn == whoRequested_ && gameStatus == "jack" ) 
+                    if ( result )
+                        lastThrownBy = turn;
+
+                    if ( result && turn == whoRequested_ && gameStatus == "jack" && turn != lastThrownBy )
                     {
                         std::cout << "End of request" << std::endl;
 
@@ -139,12 +145,13 @@ bool Game::makeTurn()
             }
             else 
             {
-                if ( gameStatus == "fight" )
+                if ( toTake > 0 && lastThrownBy != turn )
                 {
                     players[ turn ].getFromDeck( drawingDeck, toTake );
+                    toTake = 0;
                     lastThrown.clear();
                 }
-                else if ( gameStatus != "skip" )
+                else if ( gameStatus != "skip" && lastThrownBy != turn )
                     players[ turn ].getFromDeck( drawingDeck, 1 );
 
                 if ( gameStatus == "fight" || gameStatus == "skip" || ( turn == whoRequested_ && gameStatus == "jack" ) )
@@ -154,8 +161,9 @@ bool Game::makeTurn()
                     whoRequested_ = -1;
                 }
 
-                toTake = 0;
                 result = true;
+                nextTurn = true;
+                lastThrownBy = -1;
             }
         }
         catch ( const std::exception& e )
@@ -174,6 +182,9 @@ bool Game::makeTurn()
 
     executeSpecial( lastThrown );
     printInfo();
+
+    if ( nextTurn )
+        ++( *this );
 
     return isEnd;
 }
@@ -254,6 +265,7 @@ void Game::executeSpecial( Card& last )
             {
                 toTake += 3;
                 gameStatus = "fight";
+                last.clear();
 
                 break;
             }
@@ -261,6 +273,7 @@ void Game::executeSpecial( Card& last )
             {
                 toTake += 2;
                 gameStatus = "fight";
+                last.clear();
 
                 break;
             }

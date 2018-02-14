@@ -59,8 +59,8 @@ int main()
             game.printInfo();
             game.sendCardInfo();
             
-            while ( !game.makeTurn() ) {
-                ++game;
+            while ( !game.makeTurn() )
+            {
                 game.sendCardInfo();
             };            
 

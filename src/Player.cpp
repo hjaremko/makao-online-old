@@ -19,9 +19,9 @@ void Player::getFromDeck( Deck& deck, int amount )
     handDeck.sort();
 }
 
-bool Player::pushToStack( PlayingStack& stack, int which, Card& last, std::string status, std::string request, std::string color )
+bool Player::pushToStack( PlayingStack& stack, int which, Card& last, int by, int turn, std::string status, std::string request, std::string color )
 {
-    if ( stack.pushBack( handDeck.get( which ), status, request, color ) )
+    if ( stack.pushBack( handDeck.get( which ), status, request, color, last, by, turn ) )
     {
         last = stack.getTop();
         handDeck.cards_.erase( handDeck.cards_.begin() + which );
