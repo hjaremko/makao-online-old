@@ -105,7 +105,7 @@ bool Game::makeTurn()
             {
                 if ( gameStatus == "jack" && request == "-" )
                 {   
-                    std::cout << "Waiting for request" << std::endl;
+                    std::cout << "Setting request" << std::endl;
 
                     result = players[ turn ].getRequest( choiceMsg, request );
                     lastThrown.clear();
@@ -229,6 +229,7 @@ void Game::executeSpecial( Card& last )
             {
                 whoRequested_ = turn;
                 gameStatus = "jack";
+                request = "-";
 
                 sendCardInfo();
                 makeTurn();

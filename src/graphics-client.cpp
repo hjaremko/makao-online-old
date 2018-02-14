@@ -97,12 +97,13 @@ int main()
                 std::string gameStatus = "-";
                 std::string request = "-";
 
-                ChoiceMenu jackMenu( "jack" );
-                ChoiceMenu aceMenu( "ace" );
 
                 while( status != sf::Socket::Disconnected )
                 {
                     window.clear( green );
+
+                    ChoiceMenu jackMenu( "jack" );
+                    ChoiceMenu aceMenu( "ace" );
 
                     sf::Packet cardInfo;
                     sf::Packet turnInfo;
