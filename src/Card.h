@@ -31,6 +31,11 @@ class Card
             return ( type_ == card.getType() ) || ( color_ == card.getColor() );
         }
 
+        bool operator<( const Card& card )
+        {
+            return type_ < card.getType();
+        }
+
     private:
         std::string type_ = "-";
         std::string color_ = "-";

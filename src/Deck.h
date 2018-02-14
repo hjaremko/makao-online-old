@@ -11,9 +11,9 @@ class Deck
         Deck();
         virtual ~Deck();
 
-        void pushBack( Card );
-        Card popBack();
         int size();
+        Card popBack();
+        void pushBack( Card );
         void shuffle();
         void fill();
         void clear();

@@ -9,6 +9,11 @@ void HandDeck::show()
     std::cout << std::endl;
 }
 
+void HandDeck::sort()
+{
+    std::sort( cards_.begin(), cards_.end() );
+}
+
 Card HandDeck::get( int which )
 {
     return cards_[ which ];

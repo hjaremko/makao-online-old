@@ -14,6 +14,7 @@ class HandDeck : public Deck
         friend Player;
 
         void show();
+        void sort();
         Card get( int );
 
 };

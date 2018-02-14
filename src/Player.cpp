@@ -15,6 +15,8 @@ void Player::getFromDeck( Deck& deck, int amount )
 {
     for ( int i = 0; i < amount; ++i )
         this->handDeck.pushBack( deck.popBack() );
+
+    handDeck.sort();
 }
 
 bool Player::pushToStack( PlayingStack& stack, int which, Card& last, std::string status, std::string request, std::string color )
