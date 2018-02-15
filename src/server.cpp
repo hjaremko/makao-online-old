@@ -62,7 +62,7 @@ int main()
             while ( !game.makeTurn() )
             {
                 game.sendCardInfo();
-            };            
+            }
 
             //==========================================
         }

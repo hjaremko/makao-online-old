@@ -235,7 +235,30 @@ void Game::executeSpecial( Card& last )
                 break;
             }
             case 'K':
+            {
+                if ( last.getColor() == "hearts" )
+                {
+                    toTake += 5;
+                    gameStatus = "fight";
+                    last.clear();
+                }
+                else if ( last.getColor() == "spades" )
+                {
+                    toTake += 5;
+                    gameStatus = "fight";
+                    last.clear();
+
+                    turn--;
+                    if ( turn < 0 )
+                        turn = players.size() - 1;
+
+                    turn--;
+                    if ( turn < 0 )
+                        turn = players.size() - 1;
+                }
+
                 break;
+            }
             case 'J':
             {
                 whoRequested_ = turn;
@@ -249,7 +272,7 @@ void Game::executeSpecial( Card& last )
             }
             case '4':
             {
-                unsigned int nextPlayer = turn + 1;
+                int nextPlayer = turn + 1;
 
                 if ( nextPlayer == players.size() )
                     nextPlayer = 0;

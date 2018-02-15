@@ -38,7 +38,7 @@ class Game
         }
 
     private:
-        unsigned int turn = 0;
+        int turn = 0;
         int lastThrownBy = -1;
         Deck drawingDeck;
         Card lastThrown;
