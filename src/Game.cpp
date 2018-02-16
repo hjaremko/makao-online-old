@@ -148,12 +148,13 @@ bool Game::makeTurn()
                 {
                     players[ turn ].getFromDeck( drawingDeck, toTake );
                     toTake = 0;
+                    gameStatus = "-";
                     lastThrown.clear();
                 }
                 else if ( gameStatus != "skip" && lastThrownBy != turn )
                     players[ turn ].getFromDeck( drawingDeck, 1 );
 
-                if ( gameStatus == "fight" || gameStatus == "skip" || ( turn == whoRequested_ && gameStatus == "jack" ) )
+                if ( gameStatus == "skip" || ( turn == whoRequested_ && gameStatus == "jack" ) )
                 {
                     request = "-";
                     gameStatus = "-";
