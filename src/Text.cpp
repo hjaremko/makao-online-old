@@ -37,6 +37,11 @@ void Text::center()
     text_.setPosition( sf::Vector2f( 720 / 2.0f, 520 / 2.0f ) );
 }
 
+void Text::clear()
+{
+    text_.setString( "" );
+}
+
 sf::String Text::get()
 {
     return text_.getString();

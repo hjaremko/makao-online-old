@@ -19,7 +19,10 @@ Game::Game()
 
 Game::~Game()
 {
-    
+    std::cout << "Disconnecting players..." << std::endl;
+
+    for ( unsigned int i = 0; i < players.size(); ++i )
+        players[ i ].socket->disconnect();
 } //dtor
 
 void Game::dealOut( int amount )
@@ -38,7 +41,7 @@ void Game::makeStack()
     } while ( stack.getTop().isSpecial() );
 }
 
-void Game::sendCardInfo()
+sf::Socket::Status Game::sendCardInfo()
 {
     sf::Packet specialStatus;
 
@@ -58,25 +61,22 @@ void Game::sendCardInfo()
         
         specialStatus << gameStatus << toTake << request << static_cast<int>( players.size() );
 
-        for ( unsigned int j = 0; j < players.size(); j++ )
+        for ( unsigned int j = 0; j < players.size(); ++j )
         {
             if ( j != i )
                 specialStatus << players[ j ].handDeck.size();
         }
 
-        if ( players[ i ].socket->send( cardPacket ) != sf::Socket::Done )
-            std::cout << "Error sending card info!" << std::endl;
-
-        if ( players[ i ].socket->send( turnPacket ) != sf::Socket::Done )
-            std::cout << "Error sending turn info!" << std::endl;
-
-        if ( players[ i ].socket->send( specialStatus ) != sf::Socket::Done )
-            std::cout << "Error sending special info!" << std::endl;
+        status = players[ i ].socket->send( cardPacket );
+        status = players[ i ].socket->send( turnPacket );
+        status = players[ i ].socket->send( specialStatus );
 
         cardPacket.clear();
         turnPacket.clear();
         specialStatus.clear();
     }
+
+    return status;
 }
 
 bool Game::makeTurn()
@@ -88,12 +88,11 @@ bool Game::makeTurn()
     std::string choiceMsg;
     sf::Packet choice;
     sf::Packet isSuccess;
-    // Card localLast;
 
     if ( drawingDeck.size() < 26 )
         refillDrawingDeck();
     
-    while ( !result )
+    while ( !result && status == sf::Socket::Done )
     {
         std::cout << "Waiting for player " << turn << std::endl;
 
@@ -173,8 +172,7 @@ bool Game::makeTurn()
 
         isSuccess << result;
 
-        if ( players[ turn ].socket->send( isSuccess ) != sf::Socket::Done )
-            std::cout << "Error sending success info!" << std::endl;
+        status = players[ turn ].socket->send( isSuccess );
 
         choice.clear();
         isSuccess.clear();

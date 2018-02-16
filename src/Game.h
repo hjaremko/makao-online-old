@@ -18,12 +18,13 @@ class Game
         bool makeTurn();
         void dealOut( int );
         void makeStack();
-        void sendCardInfo();
         void printInfo();
         void refillDrawingDeck();
         void executeSpecial( Card& );
+        sf::Socket::Status sendCardInfo();
 
         std::array<Player, 2> players;
+        sf::Socket::Status status;
         PlayingStack stack;
 
         Game& operator++()

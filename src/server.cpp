@@ -18,53 +18,60 @@ int main()
 {
     srand( time( NULL ) );
     // ----- The server -----
-    Game game;
 
     sf::TcpSocket socket;
     sf::TcpListener listener;
     
     if ( listener.listen( 55001 ) == sf::Socket::Done )
     {
-        std::cout << "Listening..." << std::endl;
+        while ( true )
+        {
+            std::cout << "Listening..." << std::endl;
 
-        sf::SocketSelector selector;
-        selector.add( listener );
+            Game game;
+            sf::SocketSelector selector;
+            selector.add( listener );
 
-        if ( selector.wait( sf::seconds( 60 ) ) )
-        {   
-            for ( unsigned int i = 0; i < game.players.size(); i++ )
+            if ( selector.wait( sf::seconds( 60 ) ) )
             {
-                if ( selector.isReady( listener ) )
+                for ( unsigned int i = 0; i < game.players.size(); i++ )
                 {
-                    sf::TcpSocket* tmp = new sf::TcpSocket;
-
-                    if ( listener.accept( *tmp )  == sf::Socket::Done )
+                    if ( selector.isReady( listener ) )
                     {
-                        game.players[ i ].socket = tmp;
-                        game.players[ i ].address = tmp->getRemoteAddress();
+                        sf::TcpSocket* tmp = new sf::TcpSocket;
 
-                        selector.add( *tmp );
+                        if ( listener.accept( *tmp )  == sf::Socket::Done )
+                        {
+                            game.players[ i ].socket = tmp;
+                            game.players[ i ].address = tmp->getRemoteAddress();
 
-                        std::cout << "New client connected: " << tmp->getRemoteAddress() << std::endl;
+                            selector.add( *tmp );
+
+                            std::cout << "New client connected: " << tmp->getRemoteAddress() << std::endl;
+                        }
+                        else
+                            delete tmp;
                     }
-                    else
-                        delete tmp;
                 }
-            }
-            //==========================================
-            std::cout << "Game started!" << std::endl;
+                //==========================================
+                std::cout << "Game started!" << std::endl;
 
-            game.makeStack();
-            game.dealOut( 5 );
-            game.printInfo();
-            game.sendCardInfo();
-            
-            while ( !game.makeTurn() )
-            {
+                game.makeStack();
+                game.dealOut( 5 );
+                game.printInfo();
                 game.sendCardInfo();
-            }
 
-            //==========================================
+                while ( !game.makeTurn() && game.status == sf::Socket::Done )
+                {
+                    game.sendCardInfo();
+
+                    if ( game.status != sf::Socket::Done )
+                        std::cout << "Connection lost!" << std::endl;
+                }
+
+                std::cout << "Game over!" << std::endl;
+                //==========================================
+            }
         }
     }
 
