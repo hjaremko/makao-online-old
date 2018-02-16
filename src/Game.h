@@ -48,6 +48,7 @@ class Game
         sf::Packet turnPacket;
 
         int toTake = 0;
+        int toSkip = 0;
         int whoRequested_ = -1;
         std::string request = "-";
         std::string gameStatus = "-";

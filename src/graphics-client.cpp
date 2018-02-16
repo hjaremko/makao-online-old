@@ -64,6 +64,7 @@ int main()
     Text serverIp( "", 160 );
     Text turnString( "YOUR TURN", 200 );
     Text takeString( "TO TAKE", 160 );
+    Text skipString( "TO SKIP", 220, 250 );
     Text requestString( "REQUEST", 160 );
     Text connectionInfo( "", 130 );
 
@@ -94,11 +95,12 @@ int main()
                 {
                     connectionInfo.set( "CONNECTED" );
                     window.clear( green );
-                    connectionInfo.draw( window );
+                    connectionInfo.centerDraw( window );
                     window.display();
 
 
                     int toTake = 0;
+                    int toSkip = 0;
                     int amountPlayers = 0;
                     bool isYourTurn = false;
                     std::string gameStatus = "-";
@@ -125,9 +127,10 @@ int main()
 
                         cardInfo >> topCard;
                         turnInfo >> isYourTurn;
-                        statusInfo >> gameStatus >> toTake >> request >> amountPlayers;
+                        statusInfo >> gameStatus >> toTake >> toSkip >> request >> amountPlayers;
 
                         takeString.set( std::to_string( toTake ) );
+                        skipString.set( std::to_string( toSkip ) );
                         requestString.set( request );
 
                         THandDeck otherPlayers[ amountPlayers - 1 ];
@@ -160,10 +163,13 @@ int main()
                         hand.show( window );
 
                         if ( toTake > 0 ) 
-                            takeString.draw( window );
+                            takeString.centerDraw( window );
+
+                        if ( toSkip > 0 )
+                            skipString.draw( window );
 
                         if ( request != "-" )
-                            requestString.draw( window );
+                            requestString.centerDraw( window );
 
                         if ( gameStatus == "jack" && request == "-" && isYourTurn )
                             jackMenu.show( window );
@@ -171,7 +177,7 @@ int main()
                             aceMenu.show( window );
 
                         if ( isYourTurn )
-                            turnString.draw( window );
+                            turnString.centerDraw( window );
 
                         window.display();
 
@@ -266,14 +272,15 @@ int main()
                         }
                     }
                 }
+
                 serverIp.clear();
                 isDone = false;
             }
 
             window.clear( green );
-            ipInputInfo.draw( window );
-            serverIp.draw( window );
-            connectionInfo.draw( window );
+            ipInputInfo.centerDraw( window );
+            serverIp.centerDraw( window );
+            connectionInfo.centerDraw( window );
             window.display();
         }
     } 

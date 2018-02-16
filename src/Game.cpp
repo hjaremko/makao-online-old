@@ -54,12 +54,9 @@ sf::Socket::Status Game::sendCardInfo()
         for ( int j = 0; j < players[ i ].handDeck.size(); ++j )
             cardPacket << players[ i ].handDeck.get( j );
 
-        ( i == turn && players[ i ].skip_ <= 1 ) ? turnPacket << true : turnPacket << false;
-
-        if ( players[ i ].skip_ > 0 )
-            players[ i ].skip_--;
+        ( i == turn && players[ i ].toSkip_ == 0 ) ? turnPacket << true : turnPacket << false;
         
-        specialStatus << gameStatus << toTake << request << static_cast<int>( players.size() );
+        specialStatus << gameStatus << toTake << players[ i ].toSkip_ << request << static_cast<int>( players.size() );
 
         for ( unsigned int j = 0; j < players.size(); ++j )
         {
@@ -91,95 +88,114 @@ bool Game::makeTurn()
 
     if ( drawingDeck.size() < 26 )
         refillDrawingDeck();
-    
-    while ( !result && status == sf::Socket::Done )
+
+
+    if ( players[ turn ].toSkip_ > 0 )
     {
-        std::cout << "Waiting for player " << turn << std::endl;
+        std::cout << "Skipping" << std::endl;
 
-        players[ turn ].socket->receive( choice );
-
-        try
+        nextTurn = true;
+        players[ turn ].toSkip_--;
+    }
+    else
+    {
+        while ( !result && status == sf::Socket::Done )
         {
-            choice >> choiceMsg;
+            std::cout << "Waiting for player " << turn << std::endl;
 
-            if ( choiceMsg != "r" )
+            players[ turn ].socket->receive( choice );
+
+            try
             {
-                if ( gameStatus == "jack" && request == "-" )
+                choice >> choiceMsg;
+
+                if ( choiceMsg != "r" )
                 {
-                    std::cout << "Setting request" << std::endl;
+                    if ( gameStatus == "jack" && request == "-" )
+                    {
+                        std::cout << "Setting request" << std::endl;
 
-                    result = players[ turn ].getRequest( choiceMsg, request );
-                    nextTurn = true;
-                    lastThrown.clear();
-                }
-                else if ( gameStatus == "ace" )
-                {   
-                    std::cout << "Setting new color" << std::endl;
+                        result = players[ turn ].getRequest( choiceMsg, request );
+                        nextTurn = true;
+                        lastThrown.clear();
+                    }
+                    else if ( gameStatus == "ace" )
+                    {
+                        std::cout << "Setting new color" << std::endl;
 
-                    result = players[ turn ].getRequest( choiceMsg, newColor );
-                    stack.getTop().setColor( newColor );
-                    lastThrown.clear();
-                    gameStatus = "-";
+                        result = players[ turn ].getRequest( choiceMsg, newColor );
+                        stack.getTop().setColor( newColor );
+                        lastThrown.clear();
+                        gameStatus = "-";
+                    }
+                    else
+                    {
+                        choosenCard = std::stoi( choiceMsg );
+                        result = players[ turn ].pushToStack( stack, choosenCard, lastThrown, lastThrownBy, turn, gameStatus, request, newColor );
+
+                        if ( result )
+                            lastThrownBy = turn;
+
+                        if ( result && turn == whoRequested_ && gameStatus == "jack" && turn != lastThrownBy )
+                        {
+                            std::cout << "End of request" << std::endl;
+
+                            request = "-";
+                            gameStatus = "-";
+                            whoRequested_ = -1;
+                        }
+                    }
+
+                    if ( players[ turn ].handDeck.size() == 0 )
+                        isEnd = true;
                 }
                 else
                 {
-                    choosenCard = std::stoi( choiceMsg );
-                    result = players[ turn ].pushToStack( stack, choosenCard, lastThrown, lastThrownBy, turn, gameStatus, request, newColor );
-
-                    if ( result )
-                        lastThrownBy = turn;
-
-                    if ( result && turn == whoRequested_ && gameStatus == "jack" && turn != lastThrownBy )
+                    if ( toTake > 0 && lastThrownBy != turn )
                     {
-                        std::cout << "End of request" << std::endl;
+                        players[ turn ].getFromDeck( drawingDeck, toTake );
+                        toTake = 0;
+                        gameStatus = "-";
+                        lastThrown.clear();
+                    }
+                    else if ( toSkip > 0 && lastThrownBy != turn )
+                    {
+                        toSkip--;
+                        players[ turn ].toSkip_ = toSkip;
+                        toSkip = 0;
+                        gameStatus = "-";
+                        lastThrown.clear();
+                    }
+                    else if ( gameStatus != "skip" && lastThrownBy != turn )
+                        players[ turn ].getFromDeck( drawingDeck, 1 );
 
+                    if ( ( turn == whoRequested_ && gameStatus == "jack" ) )
+                    {
                         request = "-";
                         gameStatus = "-";
                         whoRequested_ = -1;
                     }
-                }
 
-                if ( players[ turn ].handDeck.size() == 0 )
-                    isEnd = true;
+                    result = true;
+                    nextTurn = true;
+                    lastThrownBy = -1;
+                }
             }
-            else 
+            catch ( const std::exception& e )
             {
-                if ( toTake > 0 && lastThrownBy != turn )
-                {
-                    players[ turn ].getFromDeck( drawingDeck, toTake );
-                    toTake = 0;
-                    gameStatus = "-";
-                    lastThrown.clear();
-                }
-                else if ( gameStatus != "skip" && lastThrownBy != turn )
-                    players[ turn ].getFromDeck( drawingDeck, 1 );
-
-                if ( gameStatus == "skip" || ( turn == whoRequested_ && gameStatus == "jack" ) )
-                {
-                    request = "-";
-                    gameStatus = "-";
-                    whoRequested_ = -1;
-                }
-
-                result = true;
-                nextTurn = true;
-                lastThrownBy = -1;
+                result = false;
             }
+
+            isSuccess << result;
+
+            status = players[ turn ].socket->send( isSuccess );
+
+            choice.clear();
+            isSuccess.clear();
         }
-        catch ( const std::exception& e )
-        {
-            result = false;
-        }
 
-        isSuccess << result;
-
-        status = players[ turn ].socket->send( isSuccess );
-
-        choice.clear();
-        isSuccess.clear();
+        executeSpecial( lastThrown );
     }
-
-    executeSpecial( lastThrown );
     printInfo();
 
     if ( nextTurn )
@@ -196,6 +212,8 @@ void Game::printInfo()
     std::cout << "Game status: " << gameStatus << std::endl;
     std::cout << "Jack: " << request << std::endl;
     std::cout << "Ace: " << newColor << std::endl;
+    std::cout << "To take: " << toTake << std::endl;
+    std::cout << "To skip: " << toSkip << std::endl;
 
     for ( Player& i : players )
     {
@@ -227,10 +245,6 @@ void Game::executeSpecial( Card& last )
             case 'A':
             {
                 gameStatus = "ace";
-
-                sendCardInfo();
-                makeTurn();
-
                 break;
             }
             case 'K':
@@ -271,14 +285,8 @@ void Game::executeSpecial( Card& last )
             }
             case '4':
             {
-                int nextPlayer = turn + 1;
-
-                if ( nextPlayer == players.size() )
-                    nextPlayer = 0;
-
-                players[ nextPlayer ].skip_++;
+                toSkip++;
                 gameStatus = "skip";
-
                 last.clear();
 
                 break;

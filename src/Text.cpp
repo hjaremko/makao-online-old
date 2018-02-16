@@ -10,8 +10,21 @@ Text::Text( std::string string, int y ) : y_( y )
     text_.setFont( font_ );
     text_.setString( string );
     text_.setFillColor( sf::Color::White );
+    text_.setOutlineThickness( 1 );
 
     center();
+} //ctor
+
+Text::Text( std::string string, int y, int x ) : y_( y ), x_( x )
+{
+    font_.loadFromFile( "img/OperatorMono-Bold.otf" );
+    text_.setFont( font_ );
+    text_.setString( string );
+    text_.setFillColor( sf::Color::White );
+    text_.setOutlineThickness( 1 );
+
+    text_.setOrigin( 0, 0 );
+    text_.setPosition( sf::Vector2f( x_, y_ ) );
 } //ctor
 
 Text::~Text()
@@ -20,6 +33,11 @@ Text::~Text()
 } //dtor
 
 void Text::draw( sf::RenderWindow& window )
+{
+    window.draw( text_ );
+}
+
+void Text::centerDraw( sf::RenderWindow& window )
 {   
     center();
     window.draw( text_ );

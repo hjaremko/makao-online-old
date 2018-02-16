@@ -29,7 +29,7 @@ class Player
     protected:
         HandDeck handDeck;
         bool hasMakao_;
-        int skip_ = 0;
+        int toSkip_ = 0;
 };
 
 #endif // PLAYER_H
