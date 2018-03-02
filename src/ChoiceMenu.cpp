@@ -16,6 +16,9 @@ ChoiceMenu::ChoiceMenu( std::string type ) : type_( type )
             TextureCard temp( std::to_string( tmp + i ), "-" );
             pushBack( temp );
         }
+
+        TextureCard noChoice( "x", "-" );
+        pushBack( noChoice );
     }
     else if ( type_ == "ace" )
     {

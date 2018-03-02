@@ -19,21 +19,6 @@ void Player::getFromDeck( Deck& deck, int amount )
     handDeck.sort();
 }
 
-bool Player::pushToStack( PlayingStack& stack, int which, Card& last, int by, int turn, std::string status, std::string request, std::string color )
-{
-    if ( stack.pushBack( handDeck.get( which ), status, request, color, last, by, turn ) )
-    {
-        last = stack.getTop();
-        handDeck.cards_.erase( handDeck.cards_.begin() + which );
-    }
-    else
-        return false;
-
-    hasMakao_ = ( handDeck.size() == 1 ) ? true : false;
-
-    return true;
-}
-
 bool Player::hasMakao()
 {
     return hasMakao_;
@@ -43,8 +28,25 @@ bool Player::hasMakao()
 bool Player::getRequest( std::string which, std::string& request )
 {
     Card temp( which, "hearts" );
+    bool isValidRequest = false;
 
-    if ( !temp.isSpecial() )
+    switch ( which[ 0 ] )
+    {
+        case '1':
+            isValidRequest = ( which[ 1 ] != '1' ) ? true : false;
+            break;
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            isValidRequest = true;
+            break;
+        default:
+            isValidRequest = false;
+    }
+
+    if ( isValidRequest )
     {
         std::cout << "Requested: " << which << std::endl;
         request = which;

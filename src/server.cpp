@@ -62,12 +62,10 @@ int main()
                 game.sendCardInfo();
 
                 while ( !game.makeTurn() && game.status == sf::Socket::Done )
-                {
                     game.sendCardInfo();
 
-                    if ( game.status != sf::Socket::Done )
-                        std::cout << "Connection lost!" << std::endl;
-                }
+                if ( game.status != sf::Socket::Done )
+                    std::cout << "Connection lost!" << std::endl;
 
                 std::cout << "Game over!" << std::endl;
                 //==========================================

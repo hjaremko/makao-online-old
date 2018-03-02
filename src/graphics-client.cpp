@@ -209,8 +209,22 @@ int main()
                                             }
                                         }
 
+                                        // if ( which == "-" )
+                                            // continue;
+                                            ///
                                         if ( which == "-" )
+                                        {
+                                            for ( int i = hand.size(); i >= 0; --i )
+                                            {
+                                                if ( hand.containsMouse( i, turn ) )
+                                                {
+                                                    which = std::to_string( i );
+                                                    break;
+                                                }
+                                            }
                                             continue;
+                                        }
+                                        ///
                                     }
                                     else if ( gameStatus == "ace" )
                                     {
@@ -224,6 +238,16 @@ int main()
                                                 which = cardColors[ i ];
                                                 break;
                                             }
+                                            ///
+                                            for ( int i = hand.size(); i >= 0; --i )
+                                            {
+                                                if ( hand.containsMouse( i, turn ) )
+                                                {
+                                                    which = std::to_string( i );
+                                                    break;
+                                                }
+                                            }
+                                            ///
                                         }
                                     }
                                     else

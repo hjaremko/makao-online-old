@@ -4,8 +4,7 @@ Card::Card()
 {
     type_ = "-";
     color_ = "-";
-    //ctor
-}
+} //ctor
 
 Card::Card( std::string type, std::string color ) : type_( type ), color_( color )
 {
@@ -23,13 +22,12 @@ Card::Card( std::string type, std::string color ) : type_( type ), color_( color
         default:
             isSpecial_ = false;
     }
-    //ctor
-}
+} //ctor
 
 Card::~Card()
 {
-    //dtor
-}
+
+} //dtor
 
 std::string Card::getType() const
 {
@@ -58,7 +56,20 @@ void Card::clear()
     isSpecial_ = false;
 }
 
-void Card::setColor( std::string newColor )
+bool Card::setColor( std::string newColor )
 {
-    color_ = newColor;
+    std::cout << "Choosen color: " << newColor << std::endl;
+
+    if ( newColor == "spades" || newColor == "hearts" || newColor == "diamonds" || newColor == "clubs" )
+    {
+        std::cout << "New color: " << newColor << std::endl;
+        color_ = newColor;
+
+        return true;
+    }
+    else
+    {
+        std::cout << "Wrong color!" << std::endl;
+        return false;
+    }
 }

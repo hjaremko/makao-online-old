@@ -6,12 +6,12 @@
 
 #include <SFML/Graphics.hpp>
 
-class Player;
+class Game;
 
 class HandDeck : public Deck
 {
     public:
-        friend Player;
+        friend Game;
 
         void show();
         void sort();

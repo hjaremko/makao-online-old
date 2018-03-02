@@ -7,8 +7,10 @@ Card& PlayingStack::getTop()
     return cards_.back();
 }
 
-bool PlayingStack::pushBack( Card card, std::string status, std::string request, std::string color, Card last, int by, int turn )
-{   
+bool PlayingStack::pushBack( Card card, std::string status, std::string request, Card last, int by, int turn )
+{
+    std::cout << "Thrown: " << card.get() << std::endl;
+
     if ( turn == by )
     {
         if ( getTop().getType() == card.getType() )

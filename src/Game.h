@@ -16,11 +16,13 @@ class Game
         virtual ~Game();
 
         bool makeTurn();
+        bool pushToStack( int, int );
         void dealOut( int );
         void makeStack();
         void printInfo();
         void refillDrawingDeck();
         void executeSpecial( Card& );
+        void throwCard( std::string );
         sf::Socket::Status sendCardInfo();
 
         std::array<Player, 2> players;
@@ -39,17 +41,18 @@ class Game
         }
 
     private:
-        int turn = 0;
-        int lastThrownBy = -1;
         Deck drawingDeck;
         Card lastThrown;
 
         sf::Packet cardPacket;
         sf::Packet turnPacket;
 
+        int turn = 0;
         int toTake = 0;
         int toSkip = 0;
+        int lastThrownBy = -1;
         int whoRequested_ = -1;
+        bool result = false;
         std::string request = "-";
         std::string gameStatus = "-";
         std::string newColor = "-";
