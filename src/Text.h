@@ -20,7 +20,6 @@ class Text
     private:
         int y_;
         int x_;
-        // std::string string_;
         sf::Text text_;
         sf::Font font_;
 };

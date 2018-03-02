@@ -1,7 +1,5 @@
 #include "TextureCard.h"
-
-const int width = 720;
-const int height = 520;
+#include "constants.h"
 
 TextureCard::TextureCard()
 {
@@ -71,5 +69,5 @@ void TextureCard::assignTexture()
 
 void TextureCard::center()
 {
-    sprite.setPosition( sf::Vector2f( ( width  - 100 ) / 2.0f, ( height - 175 ) / 2.0f ) );
+    sprite.setPosition( sf::Vector2f( ( makao::width  - 100 ) / 2.0f, ( makao::height - 175 ) / 2.0f ) );
 }

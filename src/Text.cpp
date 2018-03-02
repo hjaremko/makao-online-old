@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Text.h"
+#include "constants.h"
 
 Text::Text( std::string string, int y ) : y_( y )
 {   
@@ -52,7 +53,7 @@ void Text::center()
 {
     sf::FloatRect textRect = text_.getLocalBounds();
     text_.setOrigin( textRect.left + textRect.width / 2.0f, y_ );
-    text_.setPosition( sf::Vector2f( 720 / 2.0f, 520 / 2.0f ) );
+    text_.setPosition( sf::Vector2f( makao::width / 2.0f, makao::height / 2.0f ) );
 }
 
 void Text::clear()

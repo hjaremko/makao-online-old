@@ -1,99 +1,308 @@
-#include <iostream>
 #include <string>
+#include <iostream>
 
 #include <SFML/Network.hpp>
+#include <SFML/Graphics.hpp>
 
-#include "Card.h"
-#include "HandDeck.h"
+#include "TextureCard.h"
+#include "THandDeck.h"
+#include "ChoiceMenu.h"
+#include "Text.h"
 
-sf::Packet& operator<<( sf::Packet& packet, const Card& card )
+#include "constants.h"
+
+sf::Packet& operator<<( sf::Packet& packet, const TextureCard& card )
 {
     return packet << card.getType() << card.getColor();
 }
 
-sf::Packet& operator>>( sf::Packet& packet, Card& card )
+sf::Packet& operator>>( sf::Packet& packet, TextureCard& card )
 {
     return packet >> card.type_ >> card.color_;
 }
 
-int main()
+bool getString( sf::Event& event, Text& str )
 {
-    sf::TcpSocket socket;
-    sf::Socket::Status status = socket.connect( "127.0.0.1", 55001 );
-
-    while ( status == sf::Socket::Done )
+    if ( event.type == sf::Event::TextEntered )
     {
-        std::cout << "Wait for your turn..." << std::endl;
-
-        sf::Packet cardInfo;
-        sf::Packet turnInfo;
-        sf::Packet status;
-
-        Card topCard;
-        HandDeck hand;
-        int toTake = 0;
-        bool isYourTurn = false;
-        std::string gameStatus = "-";
-        std::string request = "-";
-
-        socket.receive( cardInfo );
-        socket.receive( turnInfo );
-        socket.receive( status );
-
-        cardInfo >> topCard;
-        turnInfo >> isYourTurn;
-        status >> gameStatus >> toTake >> request;
-
-        std::cout << "\033[2J\033[1;1H";
-
-        std::cout << "Top card: " << topCard.get() << std::endl;
-
-        while ( !cardInfo.endOfPacket() )
+        if ( event.text.unicode == 8 ) //backspace
         {
-            Card temp;
-            cardInfo >> temp;
-            hand.pushBack( temp );
-        }
-
-        hand.show();
-
-        for ( int i = 0; i < hand.size(); ++i )
-        {
-            std::cout << "[" << i << "] ";
-        }
-        std::cout << std::endl;
-
-        while ( isYourTurn )
-        {
-            std::cout << "Your turn!" << std::endl;
-
-            if ( toTake > 0 ) 
+            if ( str.get().getSize() > 0 )
             {
-                std::cout << "To take: " << toTake << std::endl;
+                sf::String tmp = str.get();
+                tmp.erase( str.get().getSize() - 1 );
+                str.set( tmp );
             }
-            if ( request != "-" )
-                std::cout << "Request: " << request << std::endl;
-
-            std::string which = "-";
-            bool isSuccess = false;
-            sf::Packet choice;
-            sf::Packet result;
-
-            std::cin >> which;
-            choice << which;
-
-            socket.send( choice );
-            socket.receive( result );
-
-            result >> isSuccess;
-
-            if( isSuccess )
-                isYourTurn = false;
+        }
+        else if ( event.text.unicode == 13 ) //enter
+        {
+            return true;
+        }
+        else if ( event.text.unicode < 128 )
+        {
+            std::string tmp = str.get();
+            tmp += static_cast<char>( event.text.unicode );
+            str.set( tmp );
         }
     }
-    
-    std::cout << "Error connecting to the server" << std::endl;
 
+    return false;
+}
+
+int main()
+{   
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+
+    sf::RenderWindow window( sf::VideoMode( makao::width, makao::height ), "Makao Online", sf::Style::Default, settings );
+    sf::Color green( 40, 75, 35 );
+
+    bool isDone = false;
+
+    Text ipInputInfo( "ENTER SERVER IP", 200 );
+    Text serverIp( "", 160 );
+    Text turnString( "YOUR TURN", 200 );
+    Text takeString( "TO TAKE", 160 );
+    Text skipString( "TO SKIP", makao::width / 2 - 200, makao::height / 2 );
+    Text requestString( "REQUEST", 160 );
+    Text connectionInfo( "", 130 );
+
+    while ( window.isOpen() )
+    {
+        sf::TcpSocket socket;
+        sf::Event event;
+
+        while ( window.pollEvent( event ) )
+        {
+            if ( event.type == sf::Event::Closed )
+                window.close();
+
+            if ( !isDone )
+            {
+                connectionInfo.clear();
+                isDone = getString( event, serverIp );
+            }
+            else
+            {
+                sf::Socket::Status status = socket.connect( serverIp.get().toAnsiString(), 55001 );
+
+                if ( status != sf::Socket::Done )
+                {
+                    connectionInfo.set( "ERROR" );
+                }
+                else
+                {
+                    connectionInfo.set( "CONNECTED" );
+                    window.clear( green );
+                    connectionInfo.centerDraw( window );
+                    window.display();
+
+
+                    int toTake = 0;
+                    int toSkip = 0;
+                    int amountPlayers = 0;
+                    bool isYourTurn = false;
+                    std::string gameStatus = "-";
+                    std::string request = "-";
+
+
+                    while( status != sf::Socket::Disconnected )
+                    {
+                        window.clear( green );
+
+                        ChoiceMenu jackMenu( "jack" );
+                        ChoiceMenu aceMenu( "ace" );
+
+                        sf::Packet cardInfo;
+                        sf::Packet turnInfo;
+                        sf::Packet statusInfo;
+
+                        TextureCard topCard;
+                        THandDeck hand( 0 );
+
+                        status = socket.receive( cardInfo );
+                        status = socket.receive( turnInfo );
+                        status = socket.receive( statusInfo );
+
+                        cardInfo >> topCard;
+                        turnInfo >> isYourTurn;
+                        statusInfo >> gameStatus >> toTake >> toSkip >> request >> amountPlayers;
+
+                        takeString.set( std::to_string( toTake ) );
+                        skipString.set( std::to_string( toSkip ) );
+                        requestString.set( request );
+
+                        THandDeck otherPlayers[ amountPlayers - 1 ];
+
+                        for ( int k = 0; k < amountPlayers - 1; ++k )
+                        {
+                            int tmpSize = 0;
+                            statusInfo >> tmpSize;
+
+                            for ( int l = 0; l < tmpSize; ++l )
+                            {
+                                TextureCard temp;
+                                otherPlayers[ k ].orientation_ = k + 1;
+                                otherPlayers[ k ].pushBack( temp );
+                            }
+
+                            otherPlayers[ k ].show( window );
+                        }
+
+                        while ( !cardInfo.endOfPacket() )
+                        {
+                            TextureCard temp;
+                            cardInfo >> temp;
+                            hand.pushBack( temp );
+                        }
+
+                        topCard.assignTexture();
+                        topCard.center();
+                        topCard.draw( window );
+                        hand.show( window );
+
+                        if ( toTake > 0 ) 
+                            takeString.centerDraw( window );
+
+                        if ( toSkip > 0 )
+                            skipString.draw( window );
+
+                        if ( request != "-" )
+                            requestString.centerDraw( window );
+
+                        if ( gameStatus == "jack" && request == "-" && isYourTurn )
+                            jackMenu.show( window );
+                        else if ( gameStatus == "ace" && isYourTurn )
+                            aceMenu.show( window );
+
+                        if ( isYourTurn )
+                            turnString.centerDraw( window );
+
+                        window.display();
+
+                        while ( isYourTurn )
+                        {
+                            sf::Event turn;
+                            std::string which = "-";
+
+                            if ( window.waitEvent( turn ) && turn.type == sf::Event::MouseButtonPressed )
+                            {
+                                if ( turn.mouseButton.button == sf::Mouse::Left )
+                                {
+                                    bool isSuccess = false;
+                                    sf::Packet choice;
+                                    sf::Packet result;
+
+                                    if ( gameStatus == "jack" && request == "-" )
+                                    {
+                                        window.display();
+
+                                        int tmp = 5;
+
+                                        for ( int i = jackMenu.size(); i >= 0; --i )
+                                        {
+                                            if ( jackMenu.containsMouse( i, turn ) )
+                                            {
+                                                which = std::to_string( tmp + i );
+                                                break;
+                                            }
+                                        }
+
+                                        if ( which == "-" )
+                                        {
+                                        //     for ( int i = hand.size(); i >= 0; --i )
+                                        //     {
+                                        //         if ( hand.containsMouse( i, turn ) )
+                                        //         {
+                                        //             which = std::to_string( i );
+                                        //             break;
+                                        //         }
+                                        //     }
+                                            continue;
+                                        }
+                                    }
+                                    else if ( gameStatus == "ace" )
+                                    {
+                                        std::array<std::string, 4> cardColors = { "hearts", "spades", "diamonds", "clubs" };
+                                        window.display();
+
+                                        for ( int i = 0; i < 4; i++ )
+                                        {
+                                            if ( aceMenu.containsMouse( i , turn ) )
+                                            {
+                                                which = cardColors[ i ];
+                                                break;
+                                            }
+
+                                            for ( int i = hand.size(); i >= 0; --i )
+                                            {
+                                                if ( hand.containsMouse( i, turn ) )
+                                                {
+                                                    which = std::to_string( i );
+                                                    break;
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for ( int i = hand.size(); i >= 0; --i )
+                                        {
+                                            if ( hand.containsMouse( i, turn ) )
+                                            {
+                                                which = std::to_string( i );
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    choice << which;
+
+                                    status = socket.send( choice );
+                                    status = socket.receive( result );
+
+                                    result >> isSuccess;
+
+                                    if( isSuccess )
+                                        isYourTurn = false;
+                                }
+                                else if ( turn.mouseButton.button == sf::Mouse::Right )
+                                {
+                                    std::string which = "-";
+                                    bool isSuccess = false;
+                                    sf::Packet choice;
+                                    sf::Packet result;
+
+                                    which = "r";
+                                    choice << which;
+
+                                    status = socket.send( choice );
+                                    status = socket.receive( result );
+
+                                    result >> isSuccess;
+
+                                    if( isSuccess )
+                                        isYourTurn = false;
+                                }
+                            }
+
+                            while ( window.pollEvent( turn ) );
+                        }
+                    }
+                }
+
+                serverIp.clear();
+                isDone = false;
+            }
+
+            window.clear( green );
+            ipInputInfo.centerDraw( window );
+            serverIp.centerDraw( window );
+            connectionInfo.centerDraw( window );
+            window.display();
+        }
+    } 
 
     return 0;
 }
