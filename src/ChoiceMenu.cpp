@@ -41,8 +41,8 @@ void ChoiceMenu::show( sf::RenderWindow& window )
     {
         card.assignTexture();
 
-        if ( orientation_ == 0 )
-            card.sprite.move( sf::Vector2f( j + ( i * 50 ), makao::height - 220 ) ); //520 - 220
+        if ( orientation == 0 )
+            card.sprite.move( sf::Vector2f( j + ( i * 50 ), makao::height - 220 ) );
         else
             card.sprite.move( sf::Vector2f( 50, k + ( i * 50 ) ) );
 

@@ -11,9 +11,9 @@ class TextureDeck
         TextureDeck();
         virtual ~TextureDeck();
 
-        void pushBack( TextureCard );
         TextureCard popBack();
         int size();
+        void pushBack( TextureCard );
         void shuffle();
         void fill();
         void clear();

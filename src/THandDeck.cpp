@@ -6,7 +6,7 @@ THandDeck::THandDeck()
 
 } //ctor
 
-THandDeck::THandDeck( int orientation ) : orientation_( orientation )
+THandDeck::THandDeck( int o ) : orientation( o )
 {
 
 } //ctor
@@ -21,15 +21,15 @@ void THandDeck::show( sf::RenderWindow& window )
     {
         card.assignTexture();
 
-        if ( orientation_ == 0 )
+        if ( orientation == 0 )
             card.sprite.move( sf::Vector2f( j + ( i * 30 ), makao::height - 170 ) );
-        else if ( orientation_ == 1 )
+        else if ( orientation == 1 )
             card.sprite.move( sf::Vector2f( 50, k + ( i * 30 ) ) );
-        else if ( orientation_ == 2 )
+        else if ( orientation == 2 )
             card.sprite.move( sf::Vector2f( j + ( i * 30 ), 10 ) );
-        else if ( orientation_ == 3 )
+        else if ( orientation == 3 )
             card.sprite.move( sf::Vector2f( makao::width - 150, k + ( i * 30 ) ) );
-        else if ( orientation_ == -1 )
+        else if ( orientation == -1 )
             card.sprite.move( sf::Vector2f( j + ( i * 30 ), ( makao::height - 175 ) / 2.0f ) );
 
         card.draw( window );

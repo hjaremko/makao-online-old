@@ -149,7 +149,7 @@ int main()
                             for ( int l = 0; l < tmpSize; ++l )
                             {
                                 TextureCard temp;
-                                otherPlayers[ k ].orientation_ = k + 1;
+                                otherPlayers[ k ].orientation = k + 1;
                                 otherPlayers[ k ].pushBack( temp );
                             }
 
@@ -185,9 +185,10 @@ int main()
 
                         window.display();
 
+                        sf::Event turn;
+
                         while ( isYourTurn )
                         {
-                            sf::Event turn;
                             std::string which = "-";
 
                             if ( window.waitEvent( turn ) && turn.type == sf::Event::MouseButtonPressed )
@@ -200,8 +201,6 @@ int main()
 
                                     if ( gameStatus == "jack" && request == "-" )
                                     {
-                                        window.display();
-
                                         int tmp = 5;
 
                                         for ( int i = jackMenu.size(); i >= 0; --i )
@@ -218,14 +217,11 @@ int main()
                                     }
                                     else if ( gameStatus == "ace" )
                                     {
-                                        std::array<std::string, 4> cardColors = { "hearts", "spades", "diamonds", "clubs" };
-                                        window.display();
-
                                         for ( int i = 0; i < 4; i++ )
                                         {
                                             if ( aceMenu.containsMouse( i , turn ) )
                                             {
-                                                which = cardColors[ i ];
+                                                which = makao::cardColors[ i ];
                                                 break;
                                             }
 
@@ -237,7 +233,6 @@ int main()
                                                     break;
                                                 }
                                             }
-
                                         }
                                     }
                                     else
@@ -264,8 +259,8 @@ int main()
                                 }
                                 else if ( turn.mouseButton.button == sf::Mouse::Right )
                                 {
-                                    std::string which = "-";
                                     bool isSuccess = false;
+                                    std::string which = "-";
                                     sf::Packet choice;
                                     sf::Packet result;
 

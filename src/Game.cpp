@@ -71,7 +71,7 @@ sf::Socket::Status Game::sendCardInfo()
         cardPacket->clear();
         turnPacket.clear();
         specialStatus.clear();
-        // delete cardPacket;
+        delete cardPacket;
     }
 
     return status;

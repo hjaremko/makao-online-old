@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "Deck.h"
+#include "constants.h"
 
 Deck::Deck()
 {
@@ -43,12 +44,9 @@ void Deck::shuffle()
 
 void Deck::fill()
 {
-    std::array<std::string, 13> cardTypes = { "A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2" };
-    std::array<std::string, 4> cardColors = { "spades", "hearts", "diamonds", "clubs" };
-
-    for ( std::string type : cardTypes )
+    for ( std::string type : makao::cardTypes )
     {
-        for ( std::string color : cardColors )
+        for ( std::string color : makao::cardColors )
         {
             Card newCard( type, color );
             pushBack( newCard );

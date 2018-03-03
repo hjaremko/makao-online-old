@@ -15,8 +15,7 @@ class THandDeck : public TextureDeck
         void show( sf::RenderWindow& );
         bool containsMouse( int, sf::Event& );
 
-        int orientation_ = 0;
-    private:
+        int orientation = 0;
 };
 
 #endif // THANDDECK_H

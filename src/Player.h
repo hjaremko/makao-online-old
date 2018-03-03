@@ -16,9 +16,8 @@ class Player
         virtual ~Player();
 
         void getFromDeck( Deck&, int );
-        // bool pushToStack( PlayingStack&, int, Card&, int, int, std::string, std::string, std::string );
-        bool hasMakao();
         bool getRequest( std::string, std::string& );
+        bool hasMakao();
 
 
         sf::IpAddress address;
