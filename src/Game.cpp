@@ -49,10 +49,10 @@ sf::Socket::Status Game::sendCardInfo()
 
     for ( unsigned int i = 0; i < players.size(); ++i )
     {
-        cardPacket << stack.getTop();
+        cardPacket = stack.getLastThreeInPacket();
 
         for ( int j = 0; j < players[ i ].handDeck.size(); ++j )
-            cardPacket << players[ i ].handDeck.get( j );
+            *cardPacket << players[ i ].handDeck.get( j );
 
         ( i == turn && players[ i ].toSkip_ == 0 ) ? turnPacket << true : turnPacket << false;
         
@@ -64,13 +64,14 @@ sf::Socket::Status Game::sendCardInfo()
                 specialStatus << players[ j ].handDeck.size();
         }
 
-        status = players[ i ].socket->send( cardPacket );
+        status = players[ i ].socket->send( *cardPacket );
         status = players[ i ].socket->send( turnPacket );
         status = players[ i ].socket->send( specialStatus );
 
-        cardPacket.clear();
+        cardPacket->clear();
         turnPacket.clear();
         specialStatus.clear();
+        // delete cardPacket;
     }
 
     return status;
@@ -231,7 +232,7 @@ bool Game::makeTurn()
         executeSpecial( lastThrown );
     }
 
-    // printInfo();
+    printInfo();
 
     if ( nextTurn )
         ++( *this );

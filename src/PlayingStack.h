@@ -7,9 +7,10 @@
 class PlayingStack : public Deck
 {
     public:
-        Card& getTop();
         bool pushBack( Card, std::string, std::string, Card, int, int );
         void pushForce( Card );
+        Card& getTop();
+        sf::Packet* getLastThreeInPacket();
 
         void operator>>( Deck& deck )
         {   

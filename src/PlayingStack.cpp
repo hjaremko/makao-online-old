@@ -2,9 +2,26 @@
 
 #include "PlayingStack.h"
 
+sf::Packet& operator<<( sf::Packet& packet, const Card& card );
+
 Card& PlayingStack::getTop()
 {   
     return cards_.back();
+}
+
+sf::Packet* PlayingStack::getLastThreeInPacket()
+{
+    sf::Packet* cardsPacket = new sf::Packet;
+    Card temp( "-", "-" );
+
+    if ( cards_.size() >= 3 )
+        *cardsPacket << cards_.at( cards_.size() - 3 ) << cards_.at( cards_.size() - 2 ) << cards_.at( cards_.size() - 1 );
+    else if ( cards_.size() == 2 )
+        *cardsPacket << temp << cards_.at( cards_.size() - 2 ) << cards_.at( cards_.size() - 1 );
+    else if ( cards_.size() == 1 )
+        *cardsPacket << temp << temp << cards_.at( cards_.size() - 1 );
+
+    return cardsPacket;
 }
 
 bool PlayingStack::pushBack( Card card, std::string status, std::string request, Card last, int by, int turn )

@@ -44,7 +44,7 @@ class Game
         Deck drawingDeck;
         Card lastThrown;
 
-        sf::Packet cardPacket;
+        sf::Packet* cardPacket;
         sf::Packet turnPacket;
 
         int turn = 0;

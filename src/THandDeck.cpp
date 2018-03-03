@@ -29,6 +29,8 @@ void THandDeck::show( sf::RenderWindow& window )
             card.sprite.move( sf::Vector2f( j + ( i * 30 ), 10 ) );
         else if ( orientation_ == 3 )
             card.sprite.move( sf::Vector2f( makao::width - 150, k + ( i * 30 ) ) );
+        else if ( orientation_ == -1 )
+            card.sprite.move( sf::Vector2f( j + ( i * 30 ), ( makao::height - 175 ) / 2.0f ) );
 
         card.draw( window );
         i++;

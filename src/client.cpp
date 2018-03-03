@@ -117,14 +117,21 @@ int main()
                         sf::Packet turnInfo;
                         sf::Packet statusInfo;
 
-                        TextureCard topCard;
+                        THandDeck topCards( -1 );
                         THandDeck hand( 0 );
 
                         status = socket.receive( cardInfo );
                         status = socket.receive( turnInfo );
                         status = socket.receive( statusInfo );
 
-                        cardInfo >> topCard;
+                        TextureCard temp;
+                        for ( int k = 0; k < 3; ++k )
+                        {
+                            cardInfo >> temp;
+                            if ( temp.getType() != "-" )
+                                topCards.pushBack( temp );
+                        }
+
                         turnInfo >> isYourTurn;
                         statusInfo >> gameStatus >> toTake >> toSkip >> request >> amountPlayers;
 
@@ -156,9 +163,7 @@ int main()
                             hand.pushBack( temp );
                         }
 
-                        topCard.assignTexture();
-                        topCard.center();
-                        topCard.draw( window );
+                        topCards.show( window );
                         hand.show( window );
 
                         if ( toTake > 0 ) 
@@ -209,17 +214,7 @@ int main()
                                         }
 
                                         if ( which == "-" )
-                                        {
-                                        //     for ( int i = hand.size(); i >= 0; --i )
-                                        //     {
-                                        //         if ( hand.containsMouse( i, turn ) )
-                                        //         {
-                                        //             which = std::to_string( i );
-                                        //             break;
-                                        //         }
-                                        //     }
                                             continue;
-                                        }
                                     }
                                     else if ( gameStatus == "ace" )
                                     {
