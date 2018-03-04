@@ -14,7 +14,7 @@
 #include "Player.h"
 #include "Game.h"
 
-int main()
+int main( int argc, char** argv )
 {
     srand( time( NULL ) );
     // ----- The server -----
@@ -28,7 +28,7 @@ int main()
         {
             std::cout << "Listening..." << std::endl;
 
-            Game game;
+            Game game( std::stoi( argv[ 1 ] ) );
             sf::SocketSelector selector;
             selector.add( listener );
 

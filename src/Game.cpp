@@ -10,8 +10,16 @@ sf::Packet& operator>>( sf::Packet& packet, Card& card )
     return packet >> card.type_ >> card.color_;
 }
 
-Game::Game()
+Game::Game( int playerAmount )
 {
+    std::cout << "New game with " << playerAmount << " players." << std::endl;
+
+    for ( int i = 0; i < playerAmount; ++i )
+    {
+        Player temp;
+        players.push_back( temp );
+    }
+
     std::cout << "Initializing deck..." << std::endl;
 
     drawingDeck.fill();

@@ -54,7 +54,7 @@ int main()
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
-    sf::RenderWindow window( sf::VideoMode( makao::width, makao::height ), "Makao Online", sf::Style::Default, settings );
+    sf::RenderWindow window( sf::VideoMode( makao::width, makao::height, 32 ), "Makao Online", sf::Style::Default, settings );
     sf::Color green( 40, 75, 35 );
 
     bool isDone = false;
@@ -63,7 +63,7 @@ int main()
     Text serverIp( "", 160 );
     Text turnString( "YOUR TURN", 200 );
     Text takeString( "TO TAKE", 160 );
-    Text skipString( "TO SKIP", makao::width / 2 - 200, makao::height / 2 );
+    Text skipString( "TO SKIP", makao::height / 2 - 40, 250 );
     Text requestString( "REQUEST", 160 );
     Text connectionInfo( "", 130 );
 
@@ -185,15 +185,13 @@ int main()
 
                         window.display();
 
-                        sf::Event turn;
-
                         while ( isYourTurn )
                         {
                             std::string which = "-";
 
-                            if ( window.waitEvent( turn ) && turn.type == sf::Event::MouseButtonPressed )
+                            if ( window.waitEvent( event ) && event.type == sf::Event::MouseButtonPressed )
                             {
-                                if ( turn.mouseButton.button == sf::Mouse::Left )
+                                if ( event.mouseButton.button == sf::Mouse::Left )
                                 {
                                     bool isSuccess = false;
                                     sf::Packet choice;
@@ -205,7 +203,7 @@ int main()
 
                                         for ( int i = jackMenu.size(); i >= 0; --i )
                                         {
-                                            if ( jackMenu.containsMouse( i, turn ) )
+                                            if ( jackMenu.containsMouse( i, event ) )
                                             {
                                                 which = std::to_string( tmp + i );
                                                 break;
@@ -219,7 +217,7 @@ int main()
                                     {
                                         for ( int i = 0; i < 4; i++ )
                                         {
-                                            if ( aceMenu.containsMouse( i , turn ) )
+                                            if ( aceMenu.containsMouse( i , event ) )
                                             {
                                                 which = makao::cardColors[ i ];
                                                 break;
@@ -227,7 +225,7 @@ int main()
 
                                             for ( int i = hand.size(); i >= 0; --i )
                                             {
-                                                if ( hand.containsMouse( i, turn ) )
+                                                if ( hand.containsMouse( i, event ) )
                                                 {
                                                     which = std::to_string( i );
                                                     break;
@@ -239,7 +237,7 @@ int main()
                                     {
                                         for ( int i = hand.size(); i >= 0; --i )
                                         {
-                                            if ( hand.containsMouse( i, turn ) )
+                                            if ( hand.containsMouse( i, event ) )
                                             {
                                                 which = std::to_string( i );
                                                 break;
@@ -257,7 +255,7 @@ int main()
                                     if( isSuccess )
                                         isYourTurn = false;
                                 }
-                                else if ( turn.mouseButton.button == sf::Mouse::Right )
+                                else if ( event.mouseButton.button == sf::Mouse::Right )
                                 {
                                     bool isSuccess = false;
                                     std::string which = "-";
@@ -277,7 +275,7 @@ int main()
                                 }
                             }
 
-                            while ( window.pollEvent( turn ) );
+                            while ( window.pollEvent( event ) );
                         }
                     }
                 }

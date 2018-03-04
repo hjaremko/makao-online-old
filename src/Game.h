@@ -12,7 +12,7 @@
 class Game
 {
     public:
-        Game();
+        Game( int );
         virtual ~Game();
 
         bool makeTurn();
@@ -25,7 +25,7 @@ class Game
         void throwCard( std::string );
         sf::Socket::Status sendCardInfo();
 
-        std::array<Player, 2> players;
+        std::vector<Player> players;
         sf::Socket::Status status;
         PlayingStack stack;
 

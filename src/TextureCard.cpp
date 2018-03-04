@@ -13,7 +13,6 @@ TextureCard::TextureCard( std::string textureSource )
     this->texture.loadFromFile( textureSource.c_str() );
     texture.setSmooth( true );
     sprite.setTexture( texture );
-    
 } //ctor
 
 TextureCard::TextureCard( std::string type, std::string color )
